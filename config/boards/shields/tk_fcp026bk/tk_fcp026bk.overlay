@@ -1,4 +1,4 @@
-/*
+*
  * TK-FCP026BK Shield Overlay v4
  * XIAO nRF52840 + MCP23017
  *
@@ -55,6 +55,7 @@
          * Arduinoスキャン時と同じ動作方向
          */
         diode-direction = "col2row";
+        poll-period-ms = <10>;
 
         row-gpios
             = <&gpio0 2  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row0  D0  P0.02 */
