@@ -1,9 +1,10 @@
 /*
- * TK-FCP026BK Keymap
+ * TK-FCP026BK Keymap v4
  * 86キー 日本語配列
+ * 再スキャンデータ（D7〜D10使用・正確版）に基づく
  *
- * bindingsの並び順: Row×Col の行優先、16行×8列=128エントリ
- * Col:            0(GPB0)  1(GPB1)  2(GPB2)  3(GPB3)  4(GPB4)  5(GPB5)  6(GPB6)  7(GPB7)
+ * bindingsの並び順: Row行優先 16行×8列=128エントリ
+ * Col:  0(GPB0) 1(GPB1) 2(GPB2) 3(GPB3) 4(GPB4) 5(GPB5) 6(GPB6) 7(GPB7)
  */
 
 #include <behaviors.dtsi>
@@ -16,45 +17,45 @@
 
         default_layer {
             bindings = <
-			/* Col:          GPB0              GPB1              GPB2              GPB3              GPB4              GPB5              GPB6              GPB7          */
-			/* Row0  D0   */ &kp W             &kp CAPS          &kp S             &trans            &kp X             &kp INT4          &kp F1            &kp N2            /* w       caps    s       ---     x       henkan  f1      2      */
-			/* Row1  D1   */ &kp Q             &kp TAB           &kp A             &kp ESC           &kp Z             &kp INT5          &kp GRAVE         &kp N1            /* q       tab     a       esc     z       muhenk  zenkak  1      */
-			/* Row2  D2   */ &kp R             &kp T             &kp F             &kp G             &kp V             &kp B             &kp N5            &kp N4            /* r       t       f       g       v       b       5       4      */
-			/* Row3  D3   */ &kp E             &kp F3            &kp D             &kp F4            &kp C             &kp INT2          &kp F2            &kp N3            /* e       f3      d       f4      c       kana    f2      3      */
-			/* Row4  D7   */ &kp I             &kp RBKT          &kp K             &kp F6            &kp COMMA         &kp INT1          &kp EQUAL         &kp N8            /* i       lbrack  k       f6      comma   bslash  caret   8      */
-			/* Row5  D8   */ &kp U             &kp Y             &kp J             &kp H             &kp M             &kp N             &kp N6            &kp N7            /* u       y       j       h       m       n       6       7      */
-			/* Row6  D9   */ &trans            &trans            &trans            &kp UP            &trans            &kp LEFT          &trans            &trans            /* ---     ---     ---     up      ---     left    ---     ---    */
-			/* Row7  D10  */ &kp O             &kp F7            &kp L             &mo 1             &kp DOT           &kp RCTRL         &kp F8            &kp N9            /* o       f7      l       fn      dot     option  f8      9      */
-			/* Row8  GPA0 */ &trans            &trans            &trans            &trans            &trans            &kp RIGHT         &trans            &trans            /* ---     ---     ---     ---     ---     right   ---     ---    */
-			/* Row9  GPA1 */ &trans            &kp LSHFT         &kp RSHFT         &trans            &trans            &trans            &trans            &trans            /* ---     lshift  rshift  ---     ---     ---     ---     ---    */
-			/* Row10 GPA2 */ &trans            &trans            &trans            &kp SPACE         &trans            &kp DOWN          &kp DEL           &trans            /* ---     ---     ---     space   ---     down    del     ---    */
-			/* Row11 GPA3 */ &kp P             &kp LBKT          &kp SEMI          &kp QUOT          &kp NUHS          &kp FSLH          &kp MINUS         &kp N0            /* p       at      semi    colon   rbrack  slash   minus   0      */
-			/* Row12 GPA4 */ &kp INT_YEN       &kp BSPC          &trans            &kp F11           &kp RET           &kp F12           &kp F9            &kp F10           /* yen     back    ---     f11     enter   f12     f9      f10    */
-			/* Row13 GPA5 */ &kp PAUSE_BREAK   &trans            &trans            &trans            &trans            &trans            &kp LCTRL         &kp F5            /* pause   ---     ---     ---     ---     ---     lctrl   f5     */
-			/* Row14 GPA6 */ &kp KP_NUM        &trans            &trans            &kp LALT          &trans            &kp RALT          &trans            &kp PSCRN         /* numloc  ---     ---     lalt    ---     ralt    ---     prtsc  */
-			/* Row15 GPA7 */ &trans            &kp LGUI          &trans            &trans            &trans            &trans            &trans            &trans            /* ---     win     ---     ---     ---     ---     ---     ---    */
+/* Col:           GPB0              GPB1              GPB2              GPB3              GPB4              GPB5              GPB6              GPB7          */
+/* Row0  D0   */ &kp W             &kp CAPS          &kp S             &trans            &kp X             &kp INT4          &kp F1            &kp N2            /* w        caps     s        ---      x        henkan   f1       2       */
+/* Row1  D1   */ &kp Q             &kp TAB           &kp A             &kp ESC           &kp Z             &kp INT5          &kp GRAVE         &kp N1            /* q        tab      a        esc      z        muhenka  zenkaku  1       */
+/* Row2  D2   */ &kp R             &kp T             &kp F             &kp G             &kp V             &kp B             &kp N5            &kp N4            /* r        t        f        g        v        b        5        4       */
+/* Row3  D3   */ &kp E             &kp F3            &kp D             &kp F4            &kp C             &kp INT2          &kp F2            &kp N3            /* e        f3       d        f4       c        kana     f2       3       */
+/* Row4  D7   */ &kp I             &kp RBKT          &kp K             &kp F6            &kp COMMA         &kp INT1          &kp EQUAL         &kp N8            /* i        lbracke  k        f6       comma    bslash   caret    8       */
+/* Row5  D8   */ &kp U             &kp Y             &kp J             &kp H             &kp M             &kp N             &kp N6            &kp N7            /* u        y        j        h        m        n        6        7       */
+/* Row6  D9   */ &trans            &trans            &trans            &kp UP            &trans            &kp LEFT          &trans            &trans            /* ---      ---      ---      up       ---      left     ---      ---     */
+/* Row7  D10  */ &kp O             &kp F7            &kp L             &mo 1             &kp DOT           &kp RCTRL         &kp F8            &kp N9            /* o        f7       l        fn       dot      option   f8       9       */
+/* Row8  GPA0 */ &trans            &trans            &trans            &trans            &trans            &kp RIGHT         &trans            &trans            /* ---      ---      ---      ---      ---      right    ---      ---     */
+/* Row9  GPA1 */ &trans            &kp LSHFT         &kp RSHFT         &trans            &trans            &trans            &trans            &trans            /* ---      lshift   rshift   ---      ---      ---      ---      ---     */
+/* Row10 GPA2 */ &trans            &trans            &trans            &kp SPACE         &trans            &kp DOWN          &kp DEL           &trans            /* ---      ---      ---      space    ---      down     del      ---     */
+/* Row11 GPA3 */ &kp P             &kp LBKT          &kp SEMI          &kp QUOT          &kp NUHS          &kp FSLH          &kp MINUS         &kp N0            /* p        at       semi     colon    rbracke  slash    minus    0       */
+/* Row12 GPA4 */ &kp INT_YEN       &kp BSPC          &trans            &kp F11           &kp RET           &kp F12           &kp F9            &kp F10           /* yen      back     ---      f11      enter    f12      f9       f10     */
+/* Row13 GPA5 */ &kp PAUSE_BREAK   &trans            &trans            &trans            &trans            &trans            &kp LCTRL         &kp F5            /* pause    ---      ---      ---      ---      ---      lctrl    f5      */
+/* Row14 GPA6 */ &kp KP_NUM        &trans            &trans            &kp LALT          &trans            &kp RALT          &trans            &kp PSCRN         /* numlock  ---      ---      lalt     ---      ralt     ---      prtsc   */
+/* Row15 GPA7 */ &trans            &kp LGUI          &trans            &trans            &trans            &trans            &trans            &trans            /* ---      win      ---      ---      ---      ---      ---      ---     */
             >;
         };
 
         fn_layer {
             bindings = <
-			/* Col:          GPB0              GPB1              GPB2              GPB3              GPB4              GPB5              GPB6              GPB7          */
-			/* Row0  D0   */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &bt BT_SEL 1         
-			/* Row1  D1   */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &bt BT_SEL 0          
-			/* Row2  D2   */ &trans            &trans            &trans            &trans            &trans            &trans            &bt BT_CLR_ALL    &bt BT_CLR          
-			/* Row3  D3   */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &bt BT_SEL 2         
-			/* Row4  D7   */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
-			/* Row5  D8   */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
-			/* Row6  D9   */ &trans            &trans            &trans            &kp PG_UP         &trans            &kp HOME          &trans            &trans          
-			/* Row7  D10  */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
-			/* Row8  GPA0 */ &trans            &trans            &trans            &trans            &trans            &kp END           &trans            &trans          
-			/* Row9  GPA1 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
-			/* Row10 GPA2 */ &trans            &trans            &trans            &trans            &trans            &kp PG_DN         &trans            &trans          
-			/* Row11 GPA3 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
-			/* Row12 GPA4 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
-			/* Row13 GPA5 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
-			/* Row14 GPA6 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
-			/* Row15 GPA7 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Col:           GPB0              GPB1              GPB2              GPB3              GPB4              GPB5              GPB6              GPB7          */
+/* Row0  D0   */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row1  D1   */ &trans            &trans            &trans            &trans            &trans            &trans            &bt BT_SEL 1      &bt BT_SEL 0    
+/* Row2  D2   */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row3  D3   */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row4  D7   */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row5  D8   */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row6  D9   */ &trans            &trans            &trans            &kp PG_UP         &trans            &kp HOME          &trans            &trans          
+/* Row7  D10  */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row8  GPA0 */ &trans            &trans            &trans            &trans            &trans            &kp END           &trans            &trans          
+/* Row9  GPA1 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row10 GPA2 */ &trans            &trans            &trans            &trans            &trans            &kp PG_DN         &bt BT_CLR        &trans          
+/* Row11 GPA3 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row12 GPA4 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row13 GPA5 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row14 GPA6 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
+/* Row15 GPA7 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans          
             >;
         };
     };
