@@ -58,9 +58,9 @@
          * （INTA/INTBをXIAOに配線しない限り割り込みは使えない）
          */
         diode-direction = "col2row";
-        poll-period-ms = <20>;
-        debounce-press-ms = <40>;
-        debounce-release-ms = <20>;
+        poll-period-ms = <10>;
+        debounce-press-ms = <10>;
+        debounce-release-ms = <10>;
 
         row-gpios
             = <&gpio0 2  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row0  D0  P0.02 */
