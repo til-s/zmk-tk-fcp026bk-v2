@@ -17,7 +17,7 @@
     status = "okay";
     pinctrl-0 = <&i2c0_default>;
     pinctrl-names = "default";
-    /* clock-frequency = <I2C_BITRATE_STANDARD>;  */ /* 100kHz: MCP23017の安定動作に必要 */
+    clock-frequency = <I2C_BITRATE_STANDARD>;   /* 100kHz: MCP23017の安定動作に必要 */
     mcp23017: mcp23017@20 {
         compatible = "microchip,mcp23017";
         reg = <0x20>;
@@ -58,7 +58,7 @@
          * （INTA/INTBをXIAOに配線しない限り割り込みは使えない）
          */
         diode-direction = "col2row";
-        poll-period-ms = <50>;
+        poll-period-ms = <100>;
 
         row-gpios
             = <&gpio0 2  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row0  D0  P0.02 */
