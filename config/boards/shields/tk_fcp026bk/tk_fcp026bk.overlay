@@ -58,38 +58,47 @@
          * （INTA/INTBをXIAOに配線しない限り割り込みは使えない）
          */
         diode-direction = "col2row";
-        poll-period-ms = <10>;
-        debounce-press-ms = <20>;
-        debounce-release-ms = <10>;
+        poll-period-ms = <20>;
+        debounce-press-ms = <40>;
+        debounce-release-ms = <20>;
 
+        /*
+         * ACTIVE_HIGH + プルダウン構成
+         * ZephyrのMCP230XXドライバはGPIO_ACTIVE_LOWでIPOLレジスタを設定するため
+         * gpio_pin_get_dt()のソフト反転と合わせて二重反転が発生する。
+         * ACTIVE_HIGH統一でIPOL設定を回避する。
+         * Col(GPB): 非アクティブ=LOW、アクティブ=HIGH
+         * Row(XIAO): 内蔵プルダウン使用
+         * Row(GPA): 外付け10kΩプルダウン（GNDへ）が必要
+         */
         row-gpios
-            = <&gpio0 2  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row0  D0  P0.02 */
-            , <&gpio0 3  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row1  D1  P0.03 */
-            , <&gpio0 28 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row2  D2  P0.28 */
-            , <&gpio0 29 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row3  D3  P0.29 */
-            , <&gpio1 12 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row4  D7  P1.12 */
-            , <&gpio1 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row5  D8  P1.13 */
-            , <&gpio1 14 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row6  D9  P1.14 */
-            , <&gpio1 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>   /* Row7  D10 P1.15 */
-            , <&mcp23017 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> /* Row8  GPA0 */
-            , <&mcp23017 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> /* Row9  GPA1 */
-            , <&mcp23017 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> /* Row10 GPA2 */
-            , <&mcp23017 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> /* Row11 GPA3 */
-            , <&mcp23017 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> /* Row12 GPA4 */
-            , <&mcp23017 5 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> /* Row13 GPA5 */
-            , <&mcp23017 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> /* Row14 GPA6 */
-            , <&mcp23017 7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> /* Row15 GPA7 */
+            = <&gpio0 2  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* Row0  D0  P0.02 */
+            , <&gpio0 3  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* Row1  D1  P0.03 */
+            , <&gpio0 28 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* Row2  D2  P0.28 */
+            , <&gpio0 29 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* Row3  D3  P0.29 */
+            , <&gpio1 12 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* Row4  D7  P1.12 */
+            , <&gpio1 13 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* Row5  D8  P1.13 */
+            , <&gpio1 14 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* Row6  D9  P1.14 */
+            , <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* Row7  D10 P1.15 */
+            , <&mcp23017 0 GPIO_ACTIVE_HIGH>                   /* Row8  GPA0 外付けプルダウン */
+            , <&mcp23017 1 GPIO_ACTIVE_HIGH>                   /* Row9  GPA1 外付けプルダウン */
+            , <&mcp23017 2 GPIO_ACTIVE_HIGH>                   /* Row10 GPA2 外付けプルダウン */
+            , <&mcp23017 3 GPIO_ACTIVE_HIGH>                   /* Row11 GPA3 外付けプルダウン */
+            , <&mcp23017 4 GPIO_ACTIVE_HIGH>                   /* Row12 GPA4 外付けプルダウン */
+            , <&mcp23017 5 GPIO_ACTIVE_HIGH>                   /* Row13 GPA5 外付けプルダウン */
+            , <&mcp23017 6 GPIO_ACTIVE_HIGH>                   /* Row14 GPA6 外付けプルダウン */
+            , <&mcp23017 7 GPIO_ACTIVE_HIGH>                   /* Row15 GPA7 外付けプルダウン */
             ;
 
         col-gpios
-            = <&mcp23017 8  GPIO_ACTIVE_LOW> /* Col0 GPB0 */
-            , <&mcp23017 9  GPIO_ACTIVE_LOW> /* Col1 GPB1 */
-            , <&mcp23017 10 GPIO_ACTIVE_LOW> /* Col2 GPB2 */
-            , <&mcp23017 11 GPIO_ACTIVE_LOW> /* Col3 GPB3 */
-            , <&mcp23017 12 GPIO_ACTIVE_LOW> /* Col4 GPB4 */
-            , <&mcp23017 13 GPIO_ACTIVE_LOW> /* Col5 GPB5 */
-            , <&mcp23017 14 GPIO_ACTIVE_LOW> /* Col6 GPB6 */
-            , <&mcp23017 15 GPIO_ACTIVE_LOW> /* Col7 GPB7 */
+            = <&mcp23017 8  GPIO_ACTIVE_HIGH> /* Col0 GPB0 */
+            , <&mcp23017 9  GPIO_ACTIVE_HIGH> /* Col1 GPB1 */
+            , <&mcp23017 10 GPIO_ACTIVE_HIGH> /* Col2 GPB2 */
+            , <&mcp23017 11 GPIO_ACTIVE_HIGH> /* Col3 GPB3 */
+            , <&mcp23017 12 GPIO_ACTIVE_HIGH> /* Col4 GPB4 */
+            , <&mcp23017 13 GPIO_ACTIVE_HIGH> /* Col5 GPB5 */
+            , <&mcp23017 14 GPIO_ACTIVE_HIGH> /* Col6 GPB6 */
+            , <&mcp23017 15 GPIO_ACTIVE_HIGH> /* Col7 GPB7 */
             ;
     };
 };
