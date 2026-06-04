@@ -5,8 +5,7 @@
  * 新配線:
  *   Col 0-7 : XIAO GPIO D0-D3, D5-D10
  *             D0=Col0, D1=Col1, D2=Col2, D3=Col3,
- *             D5=Col4, D6=Col5, D7=Col6, D8=Col7  ※D4はI2C(SDA)
- *             ※ D9=Col6, D10=Col7 として使用(スキャン結果より)
+ *             D7=Col4, D8=Col5, D9=Col6, D10=Col7  ※D4はI2C(SDA)
  *   Row 0-15: MCP23017 GPA0-7(Row0-7) + GPB0-7(Row8-15)
  *
  * ダイオードなしマトリクス:
