@@ -1,5 +1,5 @@
 /*
- * TK-FCP026BK Shield Overlay v8
+ * TK-FCP026BK Shield Overlay v10
  * XIAO nRF52840 + MCP23017
  *
  * 配線:
@@ -24,10 +24,6 @@
  * ColはXIAO直結GPIOのため、キー押下時にnRF52840が直接割り込み検知可能。
  * poll-period-msを省略することで割り込みモードが有効になる。
  * MCP23017のINTA/INTBは不要。
- *
- * v8変更点:
- *   - CapsLock / NumLock LED用に led-indicators ノードを追加
- *   - nfct-pins-as-gpios は既存のまま（NFC2=P0.10をNumLock LEDに使用）
  */
 #include "keymaps/tk_fcp026bk.keymap"
 #include <dt-bindings/zmk/hid_indicators.h>
