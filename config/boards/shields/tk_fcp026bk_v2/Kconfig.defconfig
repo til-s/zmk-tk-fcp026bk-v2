@@ -1,0 +1,28 @@
+if SHIELD_TK_FCP026BK_V2
+
+config ZMK_KEYBOARD_NAME
+    default "TK-FCP026BK_V2"
+
+config ZMK_USB
+    default y
+
+config ZMK_BLE
+    default y
+
+# I2C（MCP23017接続用）
+config I2C
+    default y
+
+# GPIO expander（MCP23017）
+config GPIO_MCP230XX
+    default y
+
+# バッテリー残量レポート（Windows側でパーセント表示）
+config ZMK_BATTERY_REPORTING
+    default y
+
+# HIDインジケーター（CapsLock / NumLock LEDに必要）
+config ZMK_HID_INDICATORS
+    default y
+
+endif

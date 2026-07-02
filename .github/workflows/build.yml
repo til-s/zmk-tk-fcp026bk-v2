@@ -1,10 +1,52 @@
-name: Build ZMK Firmware
+name: Build ZMK Firmware (Manual)
 
 on:
-  push:
-  pull_request:
   workflow_dispatch:
+    inputs:
+      edition:
+        description: 'ビルドするエディションを選択してください'
+        required: true
+        default: 'v1'
+        type: choice
+        options:
+          - 'v1 (プロトタイプ)'
+          - 'v2 (回路変更版)'
+          - 'v2_plus (SMD変更版)'
 
 jobs:
+  # 1. 選択されたエディションに応じて、一時的に build.yaml を生成するジョブ
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Build Matrix
+        run: |
+          echo "include:" > build.yaml
+          if [ "${{ github.event.inputs.edition }}" = "v1 (プロトタイプ)" ]; then
+            echo "  - board: xiao_ble//zmk" >> build.yaml
+            echo "    shield: tk_fcp026bk" >> build.yaml
+          elif [ "${{ github.event.inputs.edition }}" = "v2 (回路変更版)" ]; then
+            echo "  - board: xiao_ble//zmk" >> build.yaml
+            echo "    shield: tk_fcp026bk_v2" >> build.yaml
+          else
+            echo "  - board: xiao_ble//zmk" >> build.yaml
+            echo "    shield: tk_fcp026bk_v2_plus" >> build.yaml
+          fi
+          
+          # 生成された build.yaml を確認のためにログ出力
+          cat build.yaml
+
+      # 次のZMK公式ビルドジョブに生成したファイルを渡すために一時保存
+      - name: Upload temporary build.yaml
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-yaml
+          path: build.yaml
+
+  # 2. ZMK公式のワークフローを呼び出してビルドを実行するジョブ
   build:
+    needs: prepare
+    # ここで元のZMK公式の共通ワークフローを正しく呼び出します
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
