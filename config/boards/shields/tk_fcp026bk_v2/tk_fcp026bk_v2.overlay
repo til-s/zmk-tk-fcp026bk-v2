@@ -119,14 +119,14 @@
             , <&mcp23017 5  GPIO_ACTIVE_LOW>  /* Row5  GPA5 */
             , <&mcp23017 6  GPIO_ACTIVE_LOW>  /* Row6  GPA6 */
             , <&mcp23017 7  GPIO_ACTIVE_LOW>  /* Row7  GPA7 */
-            , <&mcp23017 8  GPIO_ACTIVE_LOW>  /* Row8  GPB0 */
-            , <&mcp23017 9  GPIO_ACTIVE_LOW>  /* Row9  GPB1 */
-            , <&mcp23017 10 GPIO_ACTIVE_LOW>  /* Row10 GPB2 */
-            , <&mcp23017 11 GPIO_ACTIVE_LOW>  /* Row11 GPB3 */
-            , <&mcp23017 12 GPIO_ACTIVE_LOW>  /* Row12 GPB4 */
-            , <&mcp23017 13 GPIO_ACTIVE_LOW>  /* Row13 GPB5 */
-            , <&mcp23017 14 GPIO_ACTIVE_LOW>  /* Row14 GPB6 */
-            , <&mcp23017 15 GPIO_ACTIVE_LOW>  /* Row15 GPB7 */
+            , <&mcp23017 15 GPIO_ACTIVE_LOW>  /* Row15 GPB0 */ /*物理配線の都合上、接続を逆に*/
+            , <&mcp23017 14 GPIO_ACTIVE_LOW>  /* Row14 GPB1 */
+            , <&mcp23017 13 GPIO_ACTIVE_LOW>  /* Row13 GPB2 */
+            , <&mcp23017 12 GPIO_ACTIVE_LOW>  /* Row12 GPB3 */
+            , <&mcp23017 11 GPIO_ACTIVE_LOW>  /* Row11 GPB4 */
+            , <&mcp23017 10 GPIO_ACTIVE_LOW>  /* Row10 GPB5 */
+            , <&mcp23017 9  GPIO_ACTIVE_LOW>  /* Row9  GPB6 */
+            , <&mcp23017 8  GPIO_ACTIVE_LOW>  /* Row8  GPB7 */
             ;
 
         col-gpios
