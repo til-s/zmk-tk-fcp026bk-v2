@@ -1,3 +1,4 @@
+# XIAO nRF52840 ,XIAO nRF52840 Plus とも、board: xiao_ble//zmk
 name: Build ZMK Firmware (Manual)
 
 run-name: ZMK Build [${{ github.event.inputs.edition }}] by @${{ github.actor }}
