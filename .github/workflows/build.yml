@@ -1,4 +1,3 @@
-# XIAO nRF52840 ,XIAO nRF52840 Plus とも、board: xiao_ble//zmk
 name: Build ZMK Firmware (Manual)
 
 run-name: ZMK Build [${{ github.event.inputs.edition }}] by @${{ github.actor }}
@@ -17,39 +16,77 @@ on:
           - 'v2_plus (SMD変更版)'
 
 jobs:
-  # 1. 選択されたエディションに応じて、一時的に build.yaml を生成するジョブ
-  prepare:
+  build:
     runs-on: ubuntu-latest
+    container:
+      image: zmkfirmware/zmk-build-arm:stable
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create Build Matrix
+      - name: Determine board/shield
+        id: vars
+        shell: bash
         run: |
-          echo "include:" > build.yaml
-          if [ "${{ github.event.inputs.edition }}" = "v1 (プロトタイプ)" ]; then
-            echo "  - board: xiao_ble//zmk" >> build.yaml
-            echo "    shield: tk_fcp026bk" >> build.yaml
-          elif [ "${{ github.event.inputs.edition }}" = "v2 (回路変更版)" ]; then
-            echo "  - board: xiao_ble//zmk" >> build.yaml
-            echo "    shield: tk_fcp026bk_v2" >> build.yaml
-          else
-            echo "  - board: xiao_ble//zmk" >> build.yaml
-            echo "    shield: tk_fcp026bk_v2_plus" >> build.yaml
-          fi
-          
-          # 生成された build.yaml を確認のためにログ出力
-          cat build.yaml
+          case "${{ github.event.inputs.edition }}" in
+            "v1 (プロトタイプ)")
+              shield="tk_fcp026bk" ;;
+            "v2 (回路変更版)")
+              shield="tk_fcp026bk_v2" ;;
+            "v2_plus (SMD変更版)")
+              shield="tk_fcp026bk_v2_plus" ;;
+          esac
+          board="xiao_ble//zmk"
+          echo "shield=${shield}" >> "$GITHUB_OUTPUT"
+          echo "board=${board}" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=${shield}-zmk" >> "$GITHUB_ENV"
+          echo "Selected: board=${board} shield=${shield}"
 
-      # 次のZMK公式ビルドジョブに生成したファイルを渡すために一時保存
-      - name: Upload temporary build.yaml
+      - name: Create build directory
+        run: echo "build_dir=$(mktemp -d)" >> "$GITHUB_ENV"
+
+      - name: Cache west modules
+        uses: actions/cache@v4
+        continue-on-error: true
+        with:
+          path: |
+            modules/
+            tools/
+            zephyr/
+            bootloader/
+            zmk/
+          key: ${{ runner.os }}-build-${{ hashFiles('config/west.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: West Init
+        run: west init -l config
+
+      - name: West Update
+        run: west update --fetch-opt=--filter=tree:0
+
+      - name: West Zephyr export
+        run: west zephyr-export
+
+      - name: West Build (${{ steps.vars.outputs.shield }} - ${{ steps.vars.outputs.board }})
+        shell: sh -x {0}
+        run: |
+          west build -s zmk/app -d "${{ env.build_dir }}" \
+            -b "${{ steps.vars.outputs.board }}" \
+            -- -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" \
+               -DSHIELD="${{ steps.vars.outputs.shield }}"
+
+      - name: Package artifacts
+        run: |
+          mkdir "${{ env.build_dir }}/artifacts"
+          if [ -f "${{ env.build_dir }}/zephyr/zmk.uf2" ]; then
+            cp "${{ env.build_dir }}/zephyr/zmk.uf2" "${{ env.build_dir }}/artifacts/${{ env.artifact_name }}.uf2"
+          else
+            cp "${{ env.build_dir }}/zephyr/zmk.bin" "${{ env.build_dir }}/artifacts/${{ env.artifact_name }}.bin"
+          fi
+
+      - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
-          name: build-yaml
-          path: build.yaml
-
-  # 2. ZMK公式のワークフローを呼び出してビルドを実行するジョブ
-  build:
-    needs: prepare
-    # ここで元のZMK公式の共通ワークフローを正しく呼び出します
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+          name: ${{ env.artifact_name }}
+          path: ${{ env.build_dir }}/artifacts
