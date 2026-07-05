@@ -16,77 +16,21 @@ on:
           - 'v2_plus (SMD変更版)'
 
 jobs:
-  build:
+  pick:
     runs-on: ubuntu-latest
-    container:
-      image: zmkfirmware/zmk-build-arm:stable
+    outputs:
+      matrix_path: ${{ steps.pick.outputs.path }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Determine board/shield
-        id: vars
-        shell: bash
+      - id: pick
         run: |
           case "${{ github.event.inputs.edition }}" in
-            "v1 (プロトタイプ)")
-              shield="tk_fcp026bk" ;;
-            "v2 (回路変更版)")
-              shield="tk_fcp026bk_v2" ;;
-            "v2_plus (SMD変更版)")
-              shield="tk_fcp026bk_v2_plus" ;;
+            "v1 (プロトタイプ)")   echo "path=builds/build-v1.yaml" >> "$GITHUB_OUTPUT" ;;
+            "v2 (回路変更版)")     echo "path=builds/build-v2.yaml" >> "$GITHUB_OUTPUT" ;;
+            "v2_plus (SMD変更版)") echo "path=builds/build-v2_plus.yaml" >> "$GITHUB_OUTPUT" ;;
           esac
-          board="xiao_ble//zmk"
-          echo "shield=${shield}" >> "$GITHUB_OUTPUT"
-          echo "board=${board}" >> "$GITHUB_OUTPUT"
-          echo "artifact_name=${shield}-zmk" >> "$GITHUB_ENV"
-          echo "Selected: board=${board} shield=${shield}"
 
-      - name: Create build directory
-        run: echo "build_dir=$(mktemp -d)" >> "$GITHUB_ENV"
-
-      - name: Cache west modules
-        uses: actions/cache@v4
-        continue-on-error: true
-        with:
-          path: |
-            modules/
-            tools/
-            zephyr/
-            bootloader/
-            zmk/
-          key: ${{ runner.os }}-build-${{ hashFiles('config/west.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
-
-      - name: West Init
-        run: west init -l config
-
-      - name: West Update
-        run: west update --fetch-opt=--filter=tree:0
-
-      - name: West Zephyr export
-        run: west zephyr-export
-
-      - name: West Build (${{ steps.vars.outputs.shield }} - ${{ steps.vars.outputs.board }})
-        shell: sh -x {0}
-        run: |
-          west build -s zmk/app -d "${{ env.build_dir }}" \
-            -b "${{ steps.vars.outputs.board }}" \
-            -- -DZMK_CONFIG="${GITHUB_WORKSPACE}/config" \
-               -DSHIELD="${{ steps.vars.outputs.shield }}"
-
-      - name: Package artifacts
-        run: |
-          mkdir "${{ env.build_dir }}/artifacts"
-          if [ -f "${{ env.build_dir }}/zephyr/zmk.uf2" ]; then
-            cp "${{ env.build_dir }}/zephyr/zmk.uf2" "${{ env.build_dir }}/artifacts/${{ env.artifact_name }}.uf2"
-          else
-            cp "${{ env.build_dir }}/zephyr/zmk.bin" "${{ env.build_dir }}/artifacts/${{ env.artifact_name }}.bin"
-          fi
-
-      - name: Upload firmware
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.artifact_name }}
-          path: ${{ env.build_dir }}/artifacts
+  build:
+    needs: pick
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+    with:
+      build_matrix_path: ${{ needs.pick.outputs.matrix_path }}
