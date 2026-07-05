@@ -25,7 +25,7 @@
  * poll-period-msを省略することで割り込みモードが有効になる。
  * MCP23017のINTA/INTBは不要。
  */
-/* #include "keymaps/tk_fcp026bk_v2.keymap" */ /* shield名と同じ名前のkeymapsが自動的に読まれるため明示的な宣言は不要 */
+#include "keymaps/tk_fcp026bk_v2.keymap"
 #include <dt-bindings/zmk/hid_indicators.h>
 
 &i2c0 {
