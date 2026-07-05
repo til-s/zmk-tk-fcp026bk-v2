@@ -1,12 +1,12 @@
 /*
- * TK-FCP026BK Shield Overlay v10
+ * TK-FCP026BK Shield Overlay
  * XIAO nRF52840 + MCP23017
  *
  * 配線:
  *   Col 0-7 : XIAO GPIO D0-D3, D7-D10  ※D4=I2C(SDA), D5=I2C(SCL), D6=CapsLock LED
  *             D0=Col0, D1=Col1, D2=Col2, D3=Col3,
  *             D7=Col4, D8=Col5, D9=Col6, D10=Col7
- *   Row 0-15: MCP23017 GPA0-7(Row0-7) + GPB0-7(Row8-15)
+ *   Row 0-15: MCP23017 GPA0-7(Row0-7) + GPB7-0(Row8-15) ← ******V1と逆******
  *
  * LEDピン:
  *   CapsLock LED : D6   = P1.11 (XIAO GPIO)
@@ -25,7 +25,7 @@
  * poll-period-msを省略することで割り込みモードが有効になる。
  * MCP23017のINTA/INTBは不要。
  */
-#include "keymaps/tk_fcp026bk_v2.keymap"
+/* #include "keymaps/tk_fcp026bk_v2.keymap" */ /* shield名と同じ名前のkeymapsが自動的に読まれるため明示的な宣言は不要 */
 #include <dt-bindings/zmk/hid_indicators.h>
 
 &i2c0 {
