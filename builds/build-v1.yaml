@@ -1,0 +1,3 @@
+include:
+  - board: xiao_ble//zmk
+    shield: tk_fcp026bk
