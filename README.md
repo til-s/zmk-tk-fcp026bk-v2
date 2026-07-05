@@ -446,29 +446,17 @@ zmk-tk-fcp026bk/          ← GitHubリポジトリのルート
 
 ### `.github/workflows/build.yml`
 
-```yaml
-name: Build ZMK Firmware
+用途: GitHub Actionsに対するビルド指示書。
 
-on:
-  push:
-  pull_request:
-  workflow_dispatch:
-
-jobs:
-  build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
-```
+意味: どの「ボード（マイコン）」と、どの「シールド（キーボード基盤）」を組み合わせてビルドするかを定義。
 
 ---
 
 ### `build.yaml`（リポジトリルートに配置）
 
-```yaml
----
-include:
-  - board: xiao_ble//zmk
-    shield: tk_fcp026bk
-```
+用途: GitHub Actionsの自動ビルド定義ファイル。
+
+意味: 「コードが更新されたら、ZMKのビルド環境（コンテナ）を起動し、build.yamlに従ってコンパイルを実行する」という自動化の流れが書かれています。
 
 > ボード名は `xiao_ble//zmk` が正しい（ZMK 2025年12月以降の新仕様）。
 
@@ -476,326 +464,45 @@ include:
 
 ### `config/west.yml`
 
-```yaml
-manifest:
-  remotes:
-    - name: zmkfirmware
-      url-base: https://github.com/zmkfirmware
-  projects:
-    - name: zmk
-      remote: zmkfirmware
-      revision: main
-      import: app/west.yml
-  self:
-    path: config
-```
+用途: ZMKの依存関係（ライブラリ）管理ファイル。
+
+意味: westというZephyrのツールに対し、どのバージョンのZMKソースコードをダウンロードして組み合わせるかを指定します。
 
 ---
 
 ### `config/boards/shields/tk_fcp026bk/Kconfig.shield`
 
-```kconfig
-config SHIELD_TK_FCP026BK
-    def_bool $(shields_list_contains,tk_fcp026bk)
-```
+用途: シールドの存在をZMKに登録するファイル。
+
+意味: SHIELD_TK_FCP026BK という名前のキーボードが存在することをシステムに認識させます。
 
 ---
 
 ### `config/boards/shields/tk_fcp026bk/Kconfig.defconfig`
 
+用途: キーボードのデフォルト内部設定ファイル。
+
+意味: 画面（OLED）の有無、RGB LEDの有効化、キーボード名（Bluetoothで見える名前）など、システム裏側の初期値を設定します。
+
 > v10確定版。CapsLock / NumLock LEDインジケーター対応。
-
-```kconfig
-if SHIELD_TK_FCP026BK
-
-config ZMK_KEYBOARD_NAME
-    default "TK-FCP026BK"
-
-config ZMK_USB
-    default y
-
-config ZMK_BLE
-    default y
-
-# I2C（MCP23017接続用）
-config I2C
-    default y
-
-# GPIO expander（MCP23017）
-config GPIO_MCP230XX
-    default y
-
-# バッテリー残量レポート（Windows側でパーセント表示）
-config ZMK_BATTERY_REPORTING
-    default y
-
-# HIDインジケーター（CapsLock / NumLock LED状態をHIDで受け取るために必要）
-# ZMK_INDICATOR_LEDS はoverlayに zmk,indicator-leds ノードがあれば自動で有効になる
-# → Kconfig.defconfigへの記述は不要（ZMK_LED_INDICATORSというシンボルは存在しない）
-config ZMK_HID_INDICATORS
-    default y
-
-endif
-```
 
 ---
 
 ### `config/boards/shields/tk_fcp026bk/tk_fcp026bk.overlay`
 
+用途: ハードウェアの配線図（デバイストリ）ファイル。
+
+意味: マイコンのどのピン（例：P0.01）が、キーマトリクスのどの行（Row）や列（Column）に繋がっているかを物理的にマッピングします。
+
 > v10確定版。CapsLock LED（D6=P1.11）・NumLock LED（NFC2=P0.10）追加。
-
-```dts
-/*
- * TK-FCP026BK Shield Overlay v10
- * XIAO nRF52840 + MCP23017
- *
- * 配線:
- *   Col 0-7 : XIAO GPIO D0-D3, D7-D10  ※D4=I2C(SDA), D5=I2C(SCL), D6=CapsLock LED
- *             D0=Col0, D1=Col1, D2=Col2, D3=Col3,
- *             D7=Col4, D8=Col5, D9=Col6, D10=Col7
- *   Row 0-15: MCP23017 GPA0-7(Row0-7) + GPB0-7(Row8-15)
- *
- * LEDピン:
- *   CapsLock LED : D6   = P1.11 (XIAO GPIO)
- *   NumLock  LED : NFC2 = P0.10 (NFCピンをGPIOに転用)
- *   接続: GPIO → 330Ω → LED(アノード) → LED(カソード) → GND
- *
- * ダイオードなしマトリクス:
- *   diode-direction = "row2col"
- *   Row(MCP23017): OUTPUT (GPIO_ACTIVE_LOW)
- *   Col(XIAO)    : INPUT  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)  ← XIAO内蔵プルアップ使用
- *
- * ColはXIAO直結GPIOのため、キー押下時にnRF52840が直接割り込み検知可能。
- * poll-period-msを省略することで割り込みモードが有効になる。
- * MCP23017のINTA/INTBは不要。
- *
- * v10変更点:
- *   - CapsLock / NumLock LED用に gpio-leds + zmk,indicator-leds ノードを追加
- *   - nfct-pins-as-gpios は既存のまま（NFC2=P0.10をNumLock LEDに使用）
- */
-#include "keymaps/tk_fcp026bk.keymap"
-#include <dt-bindings/zmk/hid_indicators.h>
-
-&i2c0 {
-    status = "okay";
-    pinctrl-0 = <&i2c0_default>;
-    pinctrl-names = "default";
-    clock-frequency = <I2C_BITRATE_FAST>; /* 400kHz: MCP23017ポーリングに必要 */
-    mcp23017: mcp23017@20 {
-        compatible = "microchip,mcp23017";
-        reg = <0x20>;
-        gpio-controller;
-        #gpio-cells = <2>;        /* gpiosプロパティの引数数：<ピン番号> <フラグ> の2つ */
-        ngpios = <16>;
-        status = "okay";
-    };
-};
-
-/* P0.28/P0.29 (D2/D3) をNFCピンからGPIOとして使用するための設定 */
-/* P0.09/P0.10 (NFC1/NFC2) も同様にGPIOとして使用可能になる         */
-&uicr {
-    nfct-pins-as-gpios;
-};
-
-&pinctrl {
-    i2c0_default: i2c0_default {
-        group1 {
-            psels = <NRF_PSEL(TWIM_SDA, 0, 4)>,
-                    <NRF_PSEL(TWIM_SCL, 0, 5)>;
-        };
-    };
-};
-
-/ {
-    chosen {
-        zmk,kscan = &kscan0;
-    };
-
-    /*
-     * GPIO LED定義（Zephyrの gpio-leds ドライバ）
-     *
-     * CapsLock LED: XIAO D6 = P1.11
-     * NumLock  LED: XIAO NFC2 = P0.10（nfct-pins-as-gpiosで転用）
-     *
-     * 接続例（ACTIVE_HIGH = HIGHで点灯）:
-     *   GPIO pin → 330Ω → LED(アノード) → LED(カソード) → GND
-     */
-    leds {
-        compatible = "gpio-leds";
-
-        caps_lock_led: caps_lock_led {
-            gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;  /* D6 = P1.11 */
-        };
-
-        num_lock_led: num_lock_led {
-            gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>;  /* NFC2 = P0.10 */
-        };
-    };
-
-    /*
-     * ZMK HIDインジケーター → LED対応定義
-     * ZMK_INDICATOR_LEDS は zmk,indicator-leds ノードの存在で自動有効化される
-     * （Kconfig.defconfigへの記述不要）
-     */
-    indicators {
-        compatible = "zmk,indicator-leds";
-
-        caps_lock_indicator: caps_lock {
-            indicator = <HID_INDICATOR_CAPS_LOCK>;
-            leds = <&caps_lock_led>;
-        };
-
-        num_lock_indicator: num_lock {
-            indicator = <HID_INDICATOR_NUM_LOCK>;
-            leds = <&num_lock_led>;
-        };
-    };
-
-    kscan0: kscan {
-        compatible = "zmk,kscan-gpio-matrix";
-        diode-direction = "row2col";
-        /* poll-period-ms = <5>; */          /* 省略 → 割り込みモード有効 */
-        debounce-press-ms = <2>;
-        debounce-release-ms = <1>;
-
-        row-gpios
-            = <&mcp23017 0  GPIO_ACTIVE_LOW>  /* Row0  GPA0 */
-            , <&mcp23017 1  GPIO_ACTIVE_LOW>  /* Row1  GPA1 */
-            , <&mcp23017 2  GPIO_ACTIVE_LOW>  /* Row2  GPA2 */
-            , <&mcp23017 3  GPIO_ACTIVE_LOW>  /* Row3  GPA3 */
-            , <&mcp23017 4  GPIO_ACTIVE_LOW>  /* Row4  GPA4 */
-            , <&mcp23017 5  GPIO_ACTIVE_LOW>  /* Row5  GPA5 */
-            , <&mcp23017 6  GPIO_ACTIVE_LOW>  /* Row6  GPA6 */
-            , <&mcp23017 7  GPIO_ACTIVE_LOW>  /* Row7  GPA7 */
-            , <&mcp23017 8  GPIO_ACTIVE_LOW>  /* Row8  GPB0 */
-            , <&mcp23017 9  GPIO_ACTIVE_LOW>  /* Row9  GPB1 */
-            , <&mcp23017 10 GPIO_ACTIVE_LOW>  /* Row10 GPB2 */
-            , <&mcp23017 11 GPIO_ACTIVE_LOW>  /* Row11 GPB3 */
-            , <&mcp23017 12 GPIO_ACTIVE_LOW>  /* Row12 GPB4 */
-            , <&mcp23017 13 GPIO_ACTIVE_LOW>  /* Row13 GPB5 */
-            , <&mcp23017 14 GPIO_ACTIVE_LOW>  /* Row14 GPB6 */
-            , <&mcp23017 15 GPIO_ACTIVE_LOW>  /* Row15 GPB7 */
-            ;
-
-        col-gpios
-            = <&gpio0 2  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col0 D0  P0.02 */
-            , <&gpio0 3  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col1 D1  P0.03 */
-            , <&gpio0 28 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col2 D2  P0.28 */
-            , <&gpio0 29 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col3 D3  P0.29 */
-            , <&gpio1 12 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col4 D7  P1.12 */
-            , <&gpio1 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col5 D8  P1.13 */
-            , <&gpio1 14 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col6 D9  P1.14 */
-            , <&gpio1 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col7 D10 P1.15 */
-            ;
-    };
-};
-```
 
 ---
 
 ### `config/boards/shields/tk_fcp026bk/keymaps/tk_fcp026bk.keymap`
 
-> v10確定版。NumLockレイヤー追加・BT_CLR/Ins変更・数字キーコード修正。
+用途: キーマップ（配列）定義ファイル。
 
-```dts
-/*
- * TK-FCP026BK Keymap v10
- * 86キー 日本語配列
- * 新配線: Col=XIAO(D0-D3,D7-D10)、Row=MCP23017(GPA0-7,GPB0-7)
- *
- * bindingsの並び順: Row行優先 16行×8列=128エントリ
- *
- * レイヤー構成:
- *   Layer 0: default_layer  … 通常入力
- *   Layer 1: fn_layer       … FNキー押しっぱなし中
- *   Layer 2: numlock_layer  … NumLockキーでトグル（テンキー的数字入力）
- *
- * v10変更点:
- *   - NumLockキー(&tog 2)でnumlock_layerをトグル
- *   - numlock_layer追加（m→0、j→1、k→2、l→3、u→4、i→5、o→6、
- *                        7→7、8→8、9→9、/→KP_SLASH、;→KP_PLUS、
- *                        p→KP_MINUS、0→KP_MULTIPLY）
- *   - 数字キーはN0〜N9（OSのNumLock状態に依存しない通常数字コード）を使用
- *     KP_Nxはテンキー専用コードでOSのNumLock OFFでカーソルキーになるため不採用
- *   - fn_layer: BT_CLRをfn+5に移動、fn+DelにInsを割り当て
- */
-
-#include <behaviors.dtsi>
-#include <dt-bindings/zmk/keys.h>
-#include <dt-bindings/zmk/bt.h>
-
-/ {
-    keymap {
-        compatible = "zmk,keymap";
-
-        default_layer {
-            bindings = <
-/* Col:           D0                D1                D2                D3                D7                D8                D9                D10           */
-/* Row0  GPA0 */ &kp Q             &kp TAB           &kp A             &kp ESC           &kp Z             &kp INT5          &kp GRAVE         &kp N1
-/* Row1  GPA1 */ &kp W             &kp CAPS          &kp S             &trans            &kp X             &kp INT4          &kp F1            &kp N2
-/* Row2  GPA2 */ &kp E             &kp F3            &kp D             &kp F4            &kp C             &kp INT2          &kp F2            &kp N3
-/* Row3  GPA3 */ &kp R             &kp T             &kp F             &kp G             &kp V             &kp B             &kp N5            &kp N4
-/* Row4  GPA4 */ &kp U             &kp Y             &kp J             &kp H             &kp M             &kp N             &kp N6            &kp N7
-/* Row5  GPA5 */ &kp I             &kp RBKT          &kp K             &kp F6            &kp COMMA         &kp INT1          &kp EQUAL         &kp N8
-/* Row6  GPA6 */ &kp O             &kp F7            &kp L             &mo 1             &kp DOT           &kp K_APP         &kp F8            &kp N9
-/* Row7  GPA7 */ &trans            &trans            &trans            &kp UP            &trans            &kp LEFT          &trans            &trans
-/* Row8  GPB0 */ &trans            &trans            &trans            &trans            &trans            &kp RIGHT         &trans            &trans
-/* Row9  GPB1 */ &trans            &trans            &trans            &kp SPACE         &trans            &kp DOWN          &kp DEL           &trans
-/* Row10 GPB2 */ &trans            &kp LSHFT         &kp RSHFT         &trans            &trans            &trans            &trans            &trans
-/* Row11 GPB3 */ &kp INT_YEN       &kp BSPC          &trans            &kp F11           &kp RET           &kp F12           &kp F9            &kp F10
-/* Row12 GPB4 */ &kp P             &kp LBKT          &kp SEMI          &kp QUOT          &kp NUHS          &kp FSLH          &kp MINUS         &kp N0
-/* Row13 GPB5 */ &tog 2            &trans            &trans            &kp LALT          &trans            &kp RALT          &trans            &kp PSCRN
-/* Row14 GPB6 */ &kp PAUSE_BREAK   &trans            &trans            &trans            &trans            &trans            &kp LCTRL         &kp F5
-/* Row15 GPB7 */ &trans            &kp LGUI          &trans            &trans            &trans            &trans            &trans            &trans
-            >;
-        };
-
-        fn_layer {
-            bindings = <
-/* Col:           D0                D1                D2                D3                D7                D8                D9                D10           */
-/* Row0  GPA0 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &bt BT_SEL 0
-/* Row1  GPA1 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &bt BT_SEL 1
-/* Row2  GPA2 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &bt BT_SEL 2
-/* Row3  GPA3 */ &trans            &trans            &trans            &trans            &trans            &trans            &bt BT_CLR        &trans
-/* Row4  GPA4 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row5  GPA5 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row6  GPA6 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row7  GPA7 */ &trans            &trans            &trans            &kp PG_UP         &trans            &kp HOME          &trans            &trans
-/* Row8  GPB0 */ &trans            &trans            &trans            &trans            &trans            &kp END           &trans            &trans
-/* Row9  GPB1 */ &trans            &trans            &trans            &trans            &trans            &kp PG_DN         &kp INS           &trans
-/* Row10 GPB2 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row11 GPB3 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row12 GPB4 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row13 GPB5 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row14 GPB6 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row15 GPB7 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-            >;
-        };
-
-        numlock_layer {
-            bindings = <
-/* Col:           D0                D1                D2                D3                D7                D8                D9                D10           */
-/* Row0  GPA0 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row1  GPA1 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row2  GPA2 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row3  GPA3 */ &trans            &trans            &trans            &trans            &trans            &trans            &kp N5            &kp N4
-/* Row4  GPA4 */ &kp N4            &kp N7            &kp N1            &trans            &kp N0            &trans            &kp N6            &kp N7
-/* Row5  GPA5 */ &kp N5            &trans            &kp N2            &trans            &trans            &trans            &trans            &kp N8
-/* Row6  GPA6 */ &kp N6            &trans            &kp N3            &trans            &trans            &trans            &trans            &kp N9
-/* Row7  GPA7 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row8  GPB0 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row9  GPB1 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row10 GPB2 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row11 GPB3 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row12 GPB4 */ &kp KP_MINUS      &trans            &kp KP_PLUS       &trans            &trans            &kp KP_SLASH      &trans            &kp KP_MULTIPLY
-/* Row13 GPB5 */ &tog 2            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row14 GPB6 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row15 GPB7 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-            >;
-        };
-    };
-};
-```
+意味: 配線されたマトリクスに対し、具体的にどのキー（A, B, Space, Layer切り替えなど）を割り当てるかを設定します。普段一番編集するファイル。
 
 ---
 
