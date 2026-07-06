@@ -1,2 +1,0 @@
-config SHIELD_TK_FCP026BK_V2_PLUS
-    def_bool $(shields_list_contains,tk_fcp026bk_v2_plus)

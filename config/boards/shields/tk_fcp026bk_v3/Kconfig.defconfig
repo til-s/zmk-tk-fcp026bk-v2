@@ -1,7 +1,7 @@
-if SHIELD_TK_FCP026BK_V2_PLUS
+if SHIELD_TK_FCP026BK_V3
 
 config ZMK_KEYBOARD_NAME
-    default "TK-FCP026BK_V2_PLUS"
+    default "TK-FCP026BK_V3"
 
 config ZMK_USB
     default y

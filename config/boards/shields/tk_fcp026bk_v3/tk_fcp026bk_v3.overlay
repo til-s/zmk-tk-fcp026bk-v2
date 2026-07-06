@@ -28,7 +28,7 @@
  *
  * D14 = P0.09 (NFC1ピンをGPIOに転用) → nfct-pins-as-gpios が必要。
  */
-#include "keymaps/tk_fcp026bk_v2_plus.keymap"
+#include "keymaps/tk_fcp026bk_v3.keymap"
 #include <dt-bindings/zmk/hid_indicators.h>
 
 &i2c0 {

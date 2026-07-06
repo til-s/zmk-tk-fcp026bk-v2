@@ -13,7 +13,7 @@ on:
         options:
           - 'v1 (プロトタイプ)'
           - 'v2 (回路変更版)'
-          - 'v2_plus (SMD変更版)'
+          - 'v3_(nrf52840 plus版)'
 
 jobs:
   pick:
@@ -24,9 +24,9 @@ jobs:
       - id: pick
         run: |
           case "${{ github.event.inputs.edition }}" in
-            "v1 (プロトタイプ)")   echo "path=builds/build-v1.yaml" >> "$GITHUB_OUTPUT" ;;
-            "v2 (回路変更版)")     echo "path=builds/build-v2.yaml" >> "$GITHUB_OUTPUT" ;;
-            "v2_plus (SMD変更版)") echo "path=builds/build-v2_plus.yaml" >> "$GITHUB_OUTPUT" ;;
+            "v1 (プロトタイプ)")    echo "path=builds/build-v1.yaml" >> "$GITHUB_OUTPUT" ;;
+            "v2 (回路変更版)")      echo "path=builds/build-v2.yaml" >> "$GITHUB_OUTPUT" ;;
+            "v3_(nrf52840 plus版)") echo "path=builds/build-v3.yaml" >> "$GITHUB_OUTPUT" ;;
           esac
 
   build:
