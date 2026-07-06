@@ -121,32 +121,32 @@ SDA  13 ─┤              ├─ 16  A1
 | MCP23017 `pin9`（VDD）直近 | MCP23017 `pin10`（VSS）直近 | ICのすぐ脇に配置 |
 
 #### FFC接続（確定版・マトリクス解析および最終ZMK構成）
-| FFC番号 | 接続先 | ZMKでの役割 |
-|---|---|---|
-| FFC01 | XIAO D0（P0.02） | Col0 |
-| FFC02 | XIAO D1（P0.03） | Col1 |
-| FFC03 | XIAO D2（P0.28） | Col2 |
-| FFC04 | XIAO D3（P0.29） | Col3 |
-| FFC05 | XIAO D7（P1.12） | Col4 |
-| FFC06 | XIAO D8（P1.13） | Col5 |
-| FFC07 | XIAO D9（P1.14） | Col6 |
-| FFC08 | XIAO D10（P1.15） | Col7 |
-| FFC09 | MCP23017 GPA0（pin21） | Row0 |
-| FFC10 | MCP23017 GPA1（pin22） | Row1 |
-| FFC11 | MCP23017 GPA2（pin23） | Row2 |
-| FFC12 | MCP23017 GPA3（pin24） | Row3 |
-| FFC13 | MCP23017 GPA4（pin25） | Row4 |
-| FFC14 | MCP23017 GPA5（pin26） | Row5 |
-| FFC15 | MCP23017 GPA6（pin27） | Row6 |
-| FFC16 | MCP23017 GPA7（pin28） | Row7 |
-| FFC17 | MCP23017 GPB0（pin1） | Row8 |
-| FFC18 | MCP23017 GPB1（pin2） | Row9 |
-| FFC19 | MCP23017 GPB2（pin3） | Row10 |
-| FFC20 | MCP23017 GPB3（pin4） | Row11 |
-| FFC21 | MCP23017 GPB4（pin5） | Row12 |
-| FFC22 | MCP23017 GPB5（pin6） | Row13 |
-| FFC23 | MCP23017 GPB6（pin7） | Row14 |
-| FFC24 | MCP23017 GPB7（pin8） | Row15 |
+| FFC番号 | 経由 | 接続先 | ZMKでの役割 |
+|---|---|---|---|
+| FFC01 | - | XIAO D0（P0.02） | Col0 |
+| FFC02 | - | XIAO D1（P0.03） | Col1 |
+| FFC03 | - | XIAO D2（P0.28） | Col2 |
+| FFC04 | - | XIAO D3（P0.29） | Col3 |
+| FFC05 | - | XIAO D7（P1.12） | Col4 |
+| FFC06 | - | XIAO D8（P1.13） | Col5 |
+| FFC07 | - | XIAO D9（P1.14） | Col6 |
+| FFC08 | - | XIAO D10（P1.15） | Col7 |
+| FFC09 | 1N4148 | MCP23017 GPA0（pin21） | Row0 |
+| FFC10 | 1N4148 | MCP23017 GPA1（pin22） | Row1 |
+| FFC11 | 1N4148 | MCP23017 GPA2（pin23） | Row2 |
+| FFC12 | 1N4148 | MCP23017 GPA3（pin24） | Row3 |
+| FFC13 | 1N4148 | MCP23017 GPA4（pin25） | Row4 |
+| FFC14 | 1N4148 | MCP23017 GPA5（pin26） | Row5 |
+| FFC15 | 1N4148 | MCP23017 GPA6（pin27） | Row6 |
+| FFC16 | 1N4148 | MCP23017 GPA7（pin28） | Row7 |
+| FFC17 | 1N4148 | MCP23017 GPB0（pin1） | Row8 |
+| FFC18 | 1N4148 | MCP23017 GPB1（pin2） | Row9 |
+| FFC19 | 1N4148 | MCP23017 GPB2（pin3） | Row10 |
+| FFC20 | 1N4148 | MCP23017 GPB3（pin4） | Row11 |
+| FFC21 | 1N4148 | MCP23017 GPB4（pin5） | Row12 |
+| FFC22 | 1N4148 | MCP23017 GPB5（pin6） | Row13 |
+| FFC23 | 1N4148 | MCP23017 GPB6（pin7） | Row14 |
+| FFC24 | 1N4148 | MCP23017 GPB7（pin8） | Row15 |
 
 ※当初のマトリクス解析時はFFC01〜08をRow・FFC17〜24をColとして接続していたが、GPA連続入力問題の解決のため配線を変更した。
 
