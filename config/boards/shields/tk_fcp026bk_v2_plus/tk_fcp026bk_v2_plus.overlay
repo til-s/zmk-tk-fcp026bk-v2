@@ -1,38 +1,41 @@
 /*
- * TK-FCP026BK Shield Overlay v10
- * XIAO nRF52840 + MCP23017
+ * TK-FCP026BK Shield Overlay v11
+ * XIAO nRF52840 Plus + MCP23017
  *
  * 配線:
- *   Col 0-7 : XIAO GPIO D0-D3, D7-D10  ※D4=I2C(SDA), D5=I2C(SCL), D6=CapsLock LED
- *             D0=Col0, D1=Col1, D2=Col2, D3=Col3,
- *             D7=Col4, D8=Col5, D9=Col6, D10=Col7
- *   Row 0-15: MCP23017 GPA0-7(Row0-7) + GPB0-7(Row8-15)
+ *   Row 0-7 : MCP23017 GPA0-7（Row0=GPA0 〜 Row7=GPA7）
+ *   Col 0-15: XIAO Plus GPIO
+ *             D0 =Col0,  D1 =Col1,  D2 =Col2,  D3 =Col3,
+ *             D6 =Col4,  D7 =Col5,  D8 =Col6,  D9 =Col7,  D10=Col8,
+ *             D11=Col9,  D12=Col10, D13=Col11, D14=Col12,
+ *             D17=Col13, D18=Col14, D19=Col15
+ *   ※D4=I2C(SDA), D5=I2C(SCL)
  *
- * LEDピン:
- *   CapsLock LED : D6   = P1.11 (XIAO GPIO)
- *   NumLock  LED : NFC2 = P0.10 (NFCピンをGPIOに転用)
+ * LEDピン（MCP23017 GPBポート）:
+ *   CapsLock LED : GPB0 = MCP23017 pin 8
+ *   NumLock  LED : GPB1 = MCP23017 pin 9
  *   ※LED接続: GPIO → 電流制限抵抗(330Ω程度) → LED → GND
- *   ※GPIO_ACTIVE_LOW = HIGH=消灯 / LOW=点灯（LOW側にGNDを接続）
- *     GPIO_ACTIVE_HIGH = LOW=消灯 / HIGH=点灯（HIGH側にLEDを接続）
- *     → 通常のNPN駆動の場合はGPIO_ACTIVE_HIGH推奨
+ *   ※GPIO_ACTIVE_HIGH = HIGHで点灯
  *
  * ダイオードなしマトリクス:
  *   diode-direction = "row2col"
- *   Row(MCP23017): OUTPUT (GPIO_ACTIVE_LOW)
- *   Col(XIAO)    : INPUT  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)  ← XIAO内蔵プルアップ使用
+ *   Row(MCP23017 GPA): OUTPUT (GPIO_ACTIVE_LOW)
+ *   Col(XIAO Plus)   : INPUT  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)
  *
- * ColはXIAO直結GPIOのため、キー押下時にnRF52840が直接割り込み検知可能。
+ * ColはXIAO Plus直結GPIOのため、nRF52840が直接割り込み検知可能。
  * poll-period-msを省略することで割り込みモードが有効になる。
  * MCP23017のINTA/INTBは不要。
+ *
+ * D14 = P0.09 (NFC1ピンをGPIOに転用) → nfct-pins-as-gpios が必要。
  */
-#include "keymaps/tk_fcp026bk_v2_plus.keymap"
+#include "keymaps/tk_fcp026bk.keymap"
 #include <dt-bindings/zmk/hid_indicators.h>
 
 &i2c0 {
     status = "okay";
     pinctrl-0 = <&i2c0_default>;
     pinctrl-names = "default";
-    clock-frequency = <I2C_BITRATE_FAST>; /* 400kHz: MCP23017ポーリングに必要 */
+    clock-frequency = <I2C_BITRATE_FAST>; /* 400kHz */
     mcp23017: mcp23017@20 {
         compatible = "microchip,mcp23017";
         reg = <0x20>;
@@ -43,8 +46,7 @@
     };
 };
 
-/* P0.28/P0.29 (D2/D3) をNFCピンからGPIOとして使用するための設定 */
-/* P0.09/P0.10 (NFC1/NFC2) も同様にGPIOとして使用可能になる         */
+/* P0.09 (NFC1/D14) をNFCピンからGPIOとして使用するための設定 */
 &uicr {
     nfct-pins-as-gpios;
 };
@@ -66,28 +68,26 @@
     /*
      * GPIO LED定義（Zephyrの gpio-leds ドライバ）
      *
-     * CapsLock LED: XIAO D6 = P1.11
-     * NumLock  LED: XIAO NFC2 = P0.10（nfct-pins-as-gpiosで転用）
+     * CapsLock LED: MCP23017 GPB0 (pin 8)
+     * NumLock  LED: MCP23017 GPB1 (pin 9)
      *
      * 接続例（ACTIVE_HIGH = HIGHで点灯）:
-     *   GPIO pin → 330Ω → LED(アノード) → LED(カソード) → GND
+     *   MCP GPB pin → 330Ω → LED(アノード) → LED(カソード) → GND
      */
     leds {
         compatible = "gpio-leds";
 
         caps_lock_led: caps_lock_led {
-            gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;  /* D6 = P1.11 */
+            gpios = <&mcp23017 8 GPIO_ACTIVE_HIGH>;  /* GPB0 */
         };
 
         num_lock_led: num_lock_led {
-            gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>;  /* NFC2 = P0.10 */
+            gpios = <&mcp23017 9 GPIO_ACTIVE_HIGH>;  /* GPB1 */
         };
     };
 
     /*
      * ZMK HIDインジケーター → LED対応定義
-     * ZMK_INDICATOR_LEDS は zmk,indicator-leds ノードの存在で自動有効化される
-     * （Kconfig.defconfigへの記述不要）
      */
     indicators {
         compatible = "zmk,indicator-leds";
@@ -111,33 +111,33 @@
         debounce-release-ms = <1>;
 
         row-gpios
-            = <&mcp23017 0  GPIO_ACTIVE_LOW>  /* Row0  GPA0 */
-            , <&mcp23017 1  GPIO_ACTIVE_LOW>  /* Row1  GPA1 */
-            , <&mcp23017 2  GPIO_ACTIVE_LOW>  /* Row2  GPA2 */
-            , <&mcp23017 3  GPIO_ACTIVE_LOW>  /* Row3  GPA3 */
-            , <&mcp23017 4  GPIO_ACTIVE_LOW>  /* Row4  GPA4 */
-            , <&mcp23017 5  GPIO_ACTIVE_LOW>  /* Row5  GPA5 */
-            , <&mcp23017 6  GPIO_ACTIVE_LOW>  /* Row6  GPA6 */
-            , <&mcp23017 7  GPIO_ACTIVE_LOW>  /* Row7  GPA7 */
-            , <&mcp23017 8  GPIO_ACTIVE_LOW>  /* Row8  GPB0 */
-            , <&mcp23017 9  GPIO_ACTIVE_LOW>  /* Row9  GPB1 */
-            , <&mcp23017 10 GPIO_ACTIVE_LOW>  /* Row10 GPB2 */
-            , <&mcp23017 11 GPIO_ACTIVE_LOW>  /* Row11 GPB3 */
-            , <&mcp23017 12 GPIO_ACTIVE_LOW>  /* Row12 GPB4 */
-            , <&mcp23017 13 GPIO_ACTIVE_LOW>  /* Row13 GPB5 */
-            , <&mcp23017 14 GPIO_ACTIVE_LOW>  /* Row14 GPB6 */
-            , <&mcp23017 15 GPIO_ACTIVE_LOW>  /* Row15 GPB7 */
+            = <&mcp23017 0 GPIO_ACTIVE_LOW>  /* Row0 GPA0 */
+            , <&mcp23017 1 GPIO_ACTIVE_LOW>  /* Row1 GPA1 */
+            , <&mcp23017 2 GPIO_ACTIVE_LOW>  /* Row2 GPA2 */
+            , <&mcp23017 3 GPIO_ACTIVE_LOW>  /* Row3 GPA3 */
+            , <&mcp23017 4 GPIO_ACTIVE_LOW>  /* Row4 GPA4 */
+            , <&mcp23017 5 GPIO_ACTIVE_LOW>  /* Row5 GPA5 */
+            , <&mcp23017 6 GPIO_ACTIVE_LOW>  /* Row6 GPA6 */
+            , <&mcp23017 7 GPIO_ACTIVE_LOW>  /* Row7 GPA7 */
             ;
 
         col-gpios
-            = <&gpio0 2  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col0 D0  P0.02 */
-            , <&gpio0 3  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col1 D1  P0.03 */
-            , <&gpio0 28 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col2 D2  P0.28 */
-            , <&gpio0 29 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col3 D3  P0.29 */
-            , <&gpio1 12 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col4 D7  P1.12 */
-            , <&gpio1 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col5 D8  P1.13 */
-            , <&gpio1 14 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col6 D9  P1.14 */
-            , <&gpio1 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col7 D10 P1.15 */
+            = <&gpio0 2  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col0  D0  P0.02 */
+            , <&gpio0 3  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col1  D1  P0.03 */
+            , <&gpio0 28 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col2  D2  P0.28 */
+            , <&gpio0 29 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col3  D3  P0.29 */
+            , <&gpio1 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col4  D6  P1.11 */
+            , <&gpio1 12 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col5  D7  P1.12 */
+            , <&gpio1 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col6  D8  P1.13 */
+            , <&gpio1 14 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col7  D9  P1.14 */
+            , <&gpio1 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col8  D10 P1.15 */
+            , <&gpio0 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col9  D11 P0.15 */
+            , <&gpio0 19 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col10 D12 P0.19 */
+            , <&gpio1 1  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col11 D13 P1.01 */
+            , <&gpio0 9  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col12 D14 P0.09 (NFC1転用) */
+            , <&gpio1 7  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col13 D17 P1.07 */
+            , <&gpio1 5  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col14 D18 P1.05 */
+            , <&gpio1 3  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col15 D19 P1.03 */
             ;
     };
 };
