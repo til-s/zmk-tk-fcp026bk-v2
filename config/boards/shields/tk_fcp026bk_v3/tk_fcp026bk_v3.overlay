@@ -122,7 +122,7 @@
             ;
 
         col-gpios
-/* left side /*
+/* left side */
             = <&gpio0 2  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col0  D0  P0.02 */
             , <&gpio0 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col1  D11 P0.15 */
             , <&gpio0 3  (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col2  D1  P0.03 */
@@ -136,7 +136,7 @@
             /*<&gpio0 5   */                                /* -     D5  P0.05 SCL  */
             /*<&gpio0 31  */                                /* -     D16 P0.31 BAT  */
             , <&gpio1 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  /* Col8  D6  P1.11 */
-/* right side /*
+/* right side */
             /* VBUS */                                      /*       5V        */
             /* GND  */                                      /*       GND       */
             /* 3V3  */                                      /*       3V3       */
