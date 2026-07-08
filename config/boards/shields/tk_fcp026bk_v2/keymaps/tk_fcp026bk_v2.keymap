@@ -17,7 +17,15 @@
 #include <dt-bindings/zmk/bt.h>
 
 / {
-    keymap {
+macros {
+    numlock_toggle: numlock_toggle {
+        compatible = "zmk,behavior-macro";
+        #binding-cells = <0>;
+        bindings = <&kp KP_NUM>, <&tog 2>;
+    };
+};
+
+keymap {
         compatible = "zmk,keymap";
 
         default_layer {
@@ -36,7 +44,7 @@
 /* Row10 GPB2 */ &trans            &kp LSHFT         &kp RSHFT         &trans            &trans            &trans            &trans            &trans
 /* Row11 GPB3 */ &kp INT_YEN       &kp BSPC          &trans            &kp F11           &kp RET           &kp F12           &kp F9            &kp F10
 /* Row12 GPB4 */ &kp P             &kp LBKT          &kp SEMI          &kp QUOT          &kp NUHS          &kp FSLH          &kp MINUS         &kp N0
-/* Row13 GPB5 */ &tog 2            &trans            &trans            &kp LALT          &trans            &kp RALT          &trans            &kp PSCRN
+/* Row13 GPB5 */ &numlock_toggle   &trans            &trans            &kp LALT          &trans            &kp RALT          &trans            &kp PSCRN
 /* Row14 GPB6 */ &kp PAUSE_BREAK   &trans            &trans            &trans            &trans            &trans            &kp LCTRL         &kp F5
 /* Row15 GPB7 */ &trans            &kp LGUI          &trans            &trans            &trans            &trans            &trans            &trans
             >;
@@ -80,7 +88,7 @@
 /* Row10 GPB2 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
 /* Row11 GPB3 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
 /* Row12 GPB4 */ &kp KP_MINUS      &trans            &kp KP_PLUS       &trans            &trans            &kp KP_SLASH      &trans            &kp KP_MULTIPLY   /* p→KP-  ;→KP+  /→KP/  0→KP* */
-/* Row13 GPB5 */ &tog 2            &trans            &trans            &trans            &trans            &trans            &trans            &trans            /* numlock再押し=解除 */
+/* Row13 GPB5 */ &numlock_toggle   &trans            &trans            &trans            &trans            &trans            &trans            &trans            /* numlock再押し=解除 */
 /* Row14 GPB6 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
 /* Row15 GPB7 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
             >;
