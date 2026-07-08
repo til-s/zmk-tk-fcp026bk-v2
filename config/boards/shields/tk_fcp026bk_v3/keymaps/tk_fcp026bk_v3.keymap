@@ -17,13 +17,21 @@
 #include <dt-bindings/zmk/bt.h>
 
 / {
+    macros {
+        numlock_toggle: numlock_toggle {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp KP_NUM>, <&tog 2>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
         default_layer {
             bindings = <
 /* Col:          D0                D1                D2                D3                D6                D7                D8                D9                D10               D11               D12               D13               D14               D17               D18               D19           */
-/* Row0 GPA0 */ &kp Q             &kp W             &kp E             &kp R             &kp U             &kp I             &kp O             &trans            &trans            &trans            &trans            &kp INT_YEN       &kp P             &tog 2            &kp PAUSE_BREAK   &trans
+/* Row0 GPA0 */ &kp Q             &kp W             &kp E             &kp R             &kp U             &kp I             &kp O             &trans            &trans            &trans            &trans            &kp INT_YEN       &kp P             &numlock_toggle   &kp PAUSE_BREAK   &trans
 /* Row1 GPA1 */ &kp TAB           &kp CAPS          &kp F3            &kp T             &kp Y             &kp RBKT          &kp F7            &trans            &trans            &trans            &kp LSHFT         &kp BSPC          &kp LBKT          &trans            &trans            &kp LGUI
 /* Row2 GPA2 */ &kp A             &kp S             &kp D             &kp F             &kp J             &kp K             &kp L             &trans            &trans            &trans            &kp RSHFT         &trans            &kp SEMI          &trans            &trans            &trans
 /* Row3 GPA3 */ &kp ESC           &trans            &kp F4            &kp G             &kp H             &kp F6            &mo 1             &kp UP            &trans            &kp SPACE         &trans            &kp F11           &kp QUOT          &kp LALT          &trans            &trans
@@ -51,7 +59,7 @@
         numlock_layer {
             bindings = <
 /* Col:          D0                D1                D2                D3                D6                D7                D8                D9                D10               D11               D12               D13               D14               D17               D18               D19           */
-/* Row0 GPA0 */ &trans            &trans            &trans            &trans            &kp N4            &kp N5            &kp N6            &trans            &trans            &trans            &trans            &trans            &kp KP_MINUS      &tog 2            &trans            &trans
+/* Row0 GPA0 */ &trans            &trans            &trans            &trans            &kp N4            &kp N5            &kp N6            &trans            &trans            &trans            &trans            &trans            &kp KP_MINUS      &numlock_toggle   &trans            &trans
 /* Row1 GPA1 */ &trans            &trans            &trans            &trans            &kp N7            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
 /* Row2 GPA2 */ &trans            &trans            &trans            &trans            &kp N1            &kp N2            &kp N3            &trans            &trans            &trans            &trans            &trans            &kp KP_PLUS       &trans            &trans            &trans
 /* Row3 GPA3 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
