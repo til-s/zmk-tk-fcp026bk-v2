@@ -3,7 +3,7 @@
  * XIAO nRF52840 Plus + MCP23017
  *
  * 配線:
- *   Row 0-7 : MCP23017 GPA0-7（Row0=GPA0 〜 Row7=GPA7）
+ *   Row 0-7 : MCP23017 GPB0-7（Row0=GPB7 〜 Row7=GPB0）
  *   Col 0-15: XIAO Plus GPIO
  *             D0 =Col0,  D1 =Col1,  D2 =Col2,  D3 =Col3,
  *             D6 =Col4,  D7 =Col5,  D8 =Col6,  D9 =Col7,  D10=Col8,
@@ -12,8 +12,8 @@
  *   ※D4=I2C(SDA), D5=I2C(SCL)
  *
  * LEDピン（MCP23017 GPBポート）:
- *   CapsLock LED : GPB0 = MCP23017 pin 8
- *   NumLock  LED : GPB1 = MCP23017 pin 9
+ *   NumLock  LED : GPA5 = MCP23017 pin 5
+ *   CapsLock LED : GPA6 = MCP23017 pin 6
  *   ※LED接続: GPIO → 電流制限抵抗(330Ω程度) → LED → GND
  *   ※GPIO_ACTIVE_HIGH = HIGHで点灯
  *
@@ -68,8 +68,8 @@
     /*
      * GPIO LED定義（Zephyrの gpio-leds ドライバ）
      *
-     * CapsLock LED: MCP23017 GPB0 (pin 8)
-     * NumLock  LED: MCP23017 GPB1 (pin 9)
+     * NumLock  LED: MCP23017 GPA5 (pin 5)
+     * CapsLock LED: MCP23017 GPA6 (pin 6)
      *
      * 接続例（ACTIVE_HIGH = HIGHで点灯）:
      *   MCP GPB pin → 330Ω → LED(アノード) → LED(カソード) → GND
@@ -77,13 +77,14 @@
     leds {
         compatible = "gpio-leds";
 
-        caps_lock_led: caps_lock_led {
-            gpios = <&mcp23017 8 GPIO_ACTIVE_HIGH>;  /* GPB0 */
+        num_lock_led: num_lock_led {
+            gpios = <&mcp23017 5 GPIO_ACTIVE_HIGH>;  /* GPA5 */
         };
 
-        num_lock_led: num_lock_led {
-            gpios = <&mcp23017 9 GPIO_ACTIVE_HIGH>;  /* GPB1 */
+        caps_lock_led: caps_lock_led {
+            gpios = <&mcp23017 6 GPIO_ACTIVE_HIGH>;  /* GPA6 */
         };
+
     };
 
     /*
@@ -111,14 +112,14 @@
         debounce-release-ms = <1>;
 
         row-gpios
-            = <&mcp23017 0 GPIO_ACTIVE_LOW>  /* Row0 GPA0 */
-            , <&mcp23017 1 GPIO_ACTIVE_LOW>  /* Row1 GPA1 */
-            , <&mcp23017 2 GPIO_ACTIVE_LOW>  /* Row2 GPA2 */
-            , <&mcp23017 3 GPIO_ACTIVE_LOW>  /* Row3 GPA3 */
-            , <&mcp23017 4 GPIO_ACTIVE_LOW>  /* Row4 GPA4 */
-            , <&mcp23017 5 GPIO_ACTIVE_LOW>  /* Row5 GPA5 */
-            , <&mcp23017 6 GPIO_ACTIVE_LOW>  /* Row6 GPA6 */
-            , <&mcp23017 7 GPIO_ACTIVE_LOW>  /* Row7 GPA7 */
+            = <&mcp23017 8 GPIO_ACTIVE_LOW>   /* Row0 GPB0 */
+            , <&mcp23017 9 GPIO_ACTIVE_LOW>   /* Row1 GPB1 */
+            , <&mcp23017 10 GPIO_ACTIVE_LOW>  /* Row2 GPB2 */
+            , <&mcp23017 11 GPIO_ACTIVE_LOW>  /* Row3 GPB3 */
+            , <&mcp23017 12 GPIO_ACTIVE_LOW>  /* Row4 GPB4 */
+            , <&mcp23017 13 GPIO_ACTIVE_LOW>  /* Row5 GPB5 */
+            , <&mcp23017 14 GPIO_ACTIVE_LOW>  /* Row6 GPB6 */
+            , <&mcp23017 15 GPIO_ACTIVE_LOW>  /* Row7 GPB7 */
             ;
 
         col-gpios
