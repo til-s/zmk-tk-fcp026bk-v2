@@ -112,14 +112,14 @@
         debounce-release-ms = <1>;
 
         row-gpios
-            = <&mcp23017 8 GPIO_ACTIVE_LOW>   /* Row0 GPB0 */
-            , <&mcp23017 9 GPIO_ACTIVE_LOW>   /* Row1 GPB1 */
-            , <&mcp23017 10 GPIO_ACTIVE_LOW>  /* Row2 GPB2 */
-            , <&mcp23017 11 GPIO_ACTIVE_LOW>  /* Row3 GPB3 */
-            , <&mcp23017 12 GPIO_ACTIVE_LOW>  /* Row4 GPB4 */
-            , <&mcp23017 13 GPIO_ACTIVE_LOW>  /* Row5 GPB5 */
+            = <&mcp23017 15 GPIO_ACTIVE_LOW>  /* Row7 GPB7 */
             , <&mcp23017 14 GPIO_ACTIVE_LOW>  /* Row6 GPB6 */
-            , <&mcp23017 15 GPIO_ACTIVE_LOW>  /* Row7 GPB7 */
+            , <&mcp23017 13 GPIO_ACTIVE_LOW>  /* Row5 GPB5 */
+            , <&mcp23017 12 GPIO_ACTIVE_LOW>  /* Row4 GPB4 */
+            , <&mcp23017 11 GPIO_ACTIVE_LOW>  /* Row3 GPB3 */
+            , <&mcp23017 10 GPIO_ACTIVE_LOW>  /* Row2 GPB2 */
+            , <&mcp23017 9 GPIO_ACTIVE_LOW>   /* Row1 GPB1 */
+            , <&mcp23017 8 GPIO_ACTIVE_LOW>   /* Row0 GPB0 */
             ;
 
         col-gpios
