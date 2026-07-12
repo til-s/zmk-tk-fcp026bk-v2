@@ -45,15 +45,15 @@
         fn_layer {
             bindings = <
 /* Col:          D0                D1                D2                D3                D6                D7                D8                D9                D10               D11               D12               D13               D14               D17               D18               D19           */
-/* Row0 GPA0 */ &trans            &trans            &trans            &trans            &kp N4            &kp N5            &kp N6            &trans            &trans            &trans            &trans            &trans            &kp KP_MINUS      &trans            &trans            &trans
-/* Row1 GPA1 */ &trans            &trans            &trans            &trans            &kp N7            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row2 GPA2 */ &trans            &trans            &trans            &trans            &kp N1            &kp N2            &kp N3            &trans            &trans            &trans            &trans            &trans            &kp KP_PLUS       &trans            &trans            &trans
+/* Row0 GPA0 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
+/* Row1 GPA1 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
+/* Row2 GPA2 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
 /* Row3 GPA3 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &kp PG_UP         &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row4 GPA4 */ &trans            &trans            &trans            &trans            &kp N0            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
-/* Row5 GPA5 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &kp HOME          &kp END           &kp PG_DN         &trans            &trans            &kp KP_SLASH      &trans            &trans            &trans
-/* Row6 GPA6 */ &trans            &trans            &trans            &bt BT_CLR        &kp N6            &trans            &trans            &trans            &trans            &kp INS           &trans            &trans            &trans            &trans            &trans            &trans
-/* Row7 GPA7 */ &bt BT_SEL 0      &bt BT_SEL 1      &bt BT_SEL 2      &trans            &kp N7            &kp N8            &kp N9            &trans            &trans            &trans            &trans            &trans            &kp KP_MULTIPLY   &trans            &trans            &trans
-            >;                                                                          
+/* Row4 GPA4 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
+/* Row5 GPA5 */ &trans            &trans            &trans            &trans            &trans            &trans            &trans            &kp HOME          &kp END           &kp PG_DN         &trans            &trans            &trans            &trans            &trans            &trans
+/* Row6 GPA6 */ &trans            &trans            &trans            &bt BT_CLR        &trans            &trans            &trans            &trans            &trans            &kp INS           &trans            &trans            &trans            &trans            &trans            &trans
+/* Row7 GPA7 */ &bt BT_SEL 0      &bt BT_SEL 1      &bt BT_SEL 2      &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans            &trans
+            >;
         };
 
         numlock_layer {
@@ -70,4 +70,4 @@
             >;
         };
     };
-};
+}; 
